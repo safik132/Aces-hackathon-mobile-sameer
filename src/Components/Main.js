@@ -1,27 +1,162 @@
-import React from 'react'
-import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native'
+import React, { useState } from 'react';
+import { View, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-function Main() {
-    const navigation = useNavigation();
+import axios from 'axios';
 
-  const redirectToHome = () => {
-    // Use the navigation prop to navigate to the Home screen
-    navigation.navigate('Home');
+const Main = () => {
+  const navigation = useNavigation();
+
+  // State variables
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+
+  // Toggle between login and registration forms
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+    setEmail('');
+    setOtp('');
   };
-  return (
-    <View style={styles.Main}>
-    <Text style={styles.text}>Welcome to</Text>
-    <Image
-           source={require('../../Images/b.png')}
-           style={styles.icon}
-         />
-         <TouchableOpacity style={styles.button} onPress={redirectToHome}>
-        <Text style={styles.buttonText}>Get Started</Text>
-      </TouchableOpacity>
-    </View>
-  )
-}
 
+  // Send OTP to email
+  const sendOtp = async (email) => {
+    try {
+      await axios.post('http://localhost:5000/api/send-otp', { email });
+      Alert.alert('OTP sent to your email');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Error sending OTP');
+    }
+  };
+
+  // Handle registration
+  const handleRegister = async () => {
+    if (!name || !email || !phone) {
+      Alert.alert('Please fill all fields');
+      return;
+    }
+
+    sendOtp(email);
+  };
+
+  // Verify OTP for registration
+  const verifyOtpAndRegister = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/registeruser', {
+        name,
+        email,
+        phone,
+        otp
+      });
+
+      Alert.alert('Registration successful');
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Registration failed');
+    }
+  };
+
+  // Handle login
+  const handleLogin = async () => {
+    sendOtp(email);
+  };
+
+  // Verify OTP for login
+  const verifyOtpAndLogin = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/verify-login', {
+        email,
+        otp
+      });
+
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Login failed');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {isLogin ? (
+        // Login Form
+        <>
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+          />
+          {otp ? (
+            <>
+              <TextInput
+                placeholder="OTP"
+                value={otp}
+                onChangeText={setOtp}
+              />
+              <Button
+                title="Verify OTP & Login"
+                onPress={verifyOtpAndLogin}
+              />
+            </>
+          ) : (
+            <Button
+              title="Send OTP"
+              onPress={handleLogin}
+            />
+          )}
+          <Button
+            title="Go to Register"
+            onPress={toggleForm}
+          />
+        </>
+      ) : (
+        // Registration Form
+        <>
+          <TextInput
+            placeholder="Name"
+            value={name}
+            onChangeText={setName}
+          />
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            placeholder="Phone"
+            value={phone}
+            onChangeText={setPhone}
+          />
+          {otp ? (
+            <>
+              <TextInput
+                placeholder="OTP"
+                value={otp}
+                onChangeText={setOtp}
+              />
+              <Button
+                title="Verify OTP & Register"
+                onPress={verifyOtpAndRegister}
+              />
+            </>
+          ) : (
+            <Button
+              title="Send OTP"
+              onPress={handleRegister}
+            />
+          )}
+          <Button
+            title="Go to Login"
+            onPress={toggleForm}
+          />
+        </>
+      )}
+    </View>
+  );
+};
 const styles = StyleSheet.create({
     Main:{
         backgroundColor:'#213966',

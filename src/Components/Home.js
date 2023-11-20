@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import  Swiper  from 'react-native-swiper';
+
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -50,7 +50,7 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <Swiper
+     {/* <Swiper
         showsButtons={false}
         loop={false}
         onIndexChanged={(index) => setActiveIndex(index)}
@@ -59,7 +59,7 @@ const Home = () => {
         activeDotStyle={styles.paginationDotActive}
       >
         {data.map((item, index) => renderItem(item, index))}
-      </Swiper>
+  </Swiper>*/}
       <View style={styles.row}>
         {boxesData.map((item) => (
           <TouchableOpacity
@@ -74,6 +74,7 @@ const Home = () => {
       </View>
       <FooterButtons />
     </View>
+
   );
 };
 
