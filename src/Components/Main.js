@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import { View, StyleSheet, TextInput, Button, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
@@ -69,7 +69,7 @@ const Main = () => {
   // Handle login
   const handleLogin = async () => {
     if (!email) {
-      Alert.alert('Please enter your email');
+      Alert.alert('Please enter your correct email');
       return;
     }
 
@@ -94,6 +94,11 @@ const Main = () => {
 
   return (
     <View style={styles.container}>
+    <View style={styles.logoContainer}>
+      <Image source={require('/Images/b.png')} style={styles.logo} />
+    </View>
+
+    <View style={styles.formContainer}>
       {isLogin ? (
         // Login Form
         <>
@@ -103,7 +108,8 @@ const Main = () => {
             value={email}
             onChangeText={setEmail}
           />
-          {otpSent ? ( // Use otpSent to determine whether to show OTP input
+          {otpSent ? (
+            // OTP Input for Login
             <>
               <TextInput
                 style={styles.input}
@@ -114,18 +120,25 @@ const Main = () => {
               <Button
                 title="Verify OTP & Login"
                 onPress={verifyOtpAndLogin}
+                color="#213966"
               />
             </>
           ) : (
-            <Button
-              title="Send OTP"
-              onPress={handleLogin}
-            />
+            // Button Container for Login
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Send OTP"
+                onPress={handleLogin}
+                color="#213966" // Primary button color
+              />
+              <View style={styles.spacing} /> {/* Spacer between buttons */}
+              <Button
+                title="Go to Register"
+                onPress={toggleForm}
+                color="#213966" // Secondary button color
+              />
+            </View>
           )}
-          <Button
-            title="Go to Register"
-            onPress={toggleForm}
-          />
         </>
       ) : (
         // Registration Form
@@ -148,7 +161,8 @@ const Main = () => {
             value={phone}
             onChangeText={setPhone}
           />
-          {otpSent ? ( // Use otpSent for registration form as well
+          {otpSent ? (
+            // OTP Input for Registration
             <>
               <TextInput
                 style={styles.input}
@@ -159,61 +173,95 @@ const Main = () => {
               <Button
                 title="Verify OTP & Register"
                 onPress={verifyOtpAndRegister}
+                color="#213966"
               />
             </>
           ) : (
-            <Button
-              title="Send OTP"
-              onPress={handleRegister}
-            />
+            // Button Container for Registration
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Send OTP"
+                onPress={handleRegister}
+                color="#213966" // Primary button color
+              />
+              <View style={styles.spacing} /> {/* Spacer between buttons */}
+              <Button
+                title="Go to Login"
+                onPress={toggleForm}
+                color="#213966" // Secondary button color
+              />
+            </View>
           )}
-          <Button
-            title="Go to Login"
-            onPress={toggleForm}
-          />
         </>
       )}
     </View>
+  </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#213966',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-},
-text: {
-    fontSize: 60,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#fff',
-    marginTop: 8, 
-},
-input: {
-    width: '80%', // Match the width with the buttons
+    backgroundColor: '#213966',
+  },
+  logoContainer: {
+    marginBottom: 20,
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
+  },
+  formContainer: {
+    width: '80%',
+    alignItems: 'center',
+    backgroundColor: '#fff', // Optional: Change background color of the form
+    padding: 20, // Add some padding inside the form
+    borderRadius: 10, // Rounded corners for the form
+    borderWidth: 1, // Border width
+    borderColor: '#3498db', // Border color
+    marginBottom: 20, // Space at the bottom
+  },
+  input: {
+    width: '100%', // Full width within the formContainer
     height: 40,
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: '#ddd', // Light grey border
+    borderColor: '#ddd',
     padding: 10,
     borderRadius: 5,
-    backgroundColor: '#fff', // White background for inputs
-    color: '#000', // Black text for readability
-},
-button: {
+    backgroundColor: '#fff',
+    color: '#000',
+  },
+  button: {
     backgroundColor: '#3498db',
     padding: 10,
     borderRadius: 5,
-    width: '80%', // Match the width with the inputs
+    width: '100%', // Full width within the formContainer
     alignItems: 'center',
-    marginBottom: 12,
-},
-buttonText: {
+    marginBottom: 10,
+  },
+  buttonText: {
     color: '#fff',
     textAlign: 'center',
     fontSize: 16,
-},
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  spacing: {
+    width: 10, // Adjust as needed
+  },
+  primaryButton: {
+    backgroundColor: '#28a745', // Primary button color (example: green)
+  },
+  secondaryButton: {
+    backgroundColor: '#17a2b8', // Secondary button color (example: blue)
+  },
 icon: {
     width: 300,
     height: 300,
