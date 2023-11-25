@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-
+import  Swiper  from 'react-native-swiper';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -10,9 +10,9 @@ const Home = () => {
   const navigation = useNavigation();
 
   const data = [
-    { image: require('../../Images/Img1.png'), screen: 'Home' },
-    { image: require('../../Images/Img2.png'), screen: 'Home' },
-    { title: 'Item 3', image: require('../../Images/Img2.png'), screen: 'Rules' },
+    { image: require('../../assets/Img1.png'), screen: 'Home' },
+    { image: require('../../assets/comingsoon.png'), screen: 'Home' },
+    { title: 'Item 3', image: require('../../assets/comingsoon.png'), screen: 'Rules' },
     // Add more items as needed
   ];
 
@@ -35,12 +35,12 @@ const Home = () => {
   };
 
   const boxesData = [
-    { id: 1, label: 'Registrations', icon: require('../../Images/Registration.png'), screen: 'Registration' },
-    { id: 2, label: 'Important Dates', icon: require('../../Images/Dates.png'), screen: 'Importantdates' },
-    { id: 3, label: 'Tracks', icon: require('../../Images/Bullet.png'), screen: 'Tracks' },
-    { id: 4, label: 'Awards', icon: require('../../Images/Prize.png'), screen: 'Awards' },
-    { id: 5, label: 'Rules & Regulations', icon: require('../../Images/Rules.png'), screen: 'Rules' },
-    { id: 6, label: 'Events', icon: require('../../Images/Event.png'), screen: 'Events' },
+    { id: 1, label: 'Registrations', icon: require('../../assets/Registration.png'), screen: 'Registration' },
+    { id: 2, label: 'Important Dates', icon: require('../../assets/Dates.png'), screen: 'Important dates' },
+    { id: 3, label: 'Tracks', icon: require('../../assets/Bullet.png'), screen: 'Tracks' },
+    { id: 4, label: 'Awards', icon: require('../../assets/Prize.png'), screen: 'Awards' },
+    { id: 5, label: 'Rules & Regulations', icon: require('../../assets/Rules.png'), screen: 'Rules' },
+    { id: 6, label: 'Events', icon: require('../../assets/Event.png'), screen: 'Events' },
   ];
 
   const handleBoxPress = (item) => {
@@ -50,7 +50,7 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-     {/* <Swiper
+      <Swiper
         showsButtons={false}
         loop={false}
         onIndexChanged={(index) => setActiveIndex(index)}
@@ -59,7 +59,7 @@ const Home = () => {
         activeDotStyle={styles.paginationDotActive}
       >
         {data.map((item, index) => renderItem(item, index))}
-  </Swiper>*/}
+      </Swiper>
       <View style={styles.row}>
         {boxesData.map((item) => (
           <TouchableOpacity
@@ -74,13 +74,13 @@ const Home = () => {
       </View>
       <FooterButtons />
     </View>
-
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     flex: 1,
     
@@ -90,14 +90,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 8,
-    marginTop: 20,
-    width:'90%',
-    marginLeft:20,
-   
+    width: '90%',
+    height: 300, // Increase the height of each slide
+    marginLeft:15,
+    marginTop:30
   },
+
   image: {
     width: '100%',
-    height: 180,
+    height: '95%', // Ensure the image fills the entire slide
     borderRadius: 8,
   },
   title: {
@@ -105,7 +106,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   paginationContainer: {
-    marginTop: -60,
+    paddingBottom:20
+    
+    
   },
   paginationDot: {
     width: 8,
@@ -113,6 +116,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginHorizontal: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    
   },
   paginationDotActive: {
     width: 8,
@@ -124,10 +128,10 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 10,
+    marginTop: 30, // Increase the top margin to bring buttons down
     justifyContent: 'space-around',
-    marginBottom: 130,
   },
+
   box: {
     alignItems: 'center',
     width: '35%',
@@ -137,6 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 4,
   },
+
   icon: {
     width: 30,
     height: 30,
@@ -145,6 +150,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
   },
+  footer: {
+    width: '100%',
+    position: 'absolute', // Positioning the footer absolutely
+    bottom: 0, // At the bottom of the container
+},
 });
 
 export default Home;

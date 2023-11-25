@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -18,7 +18,11 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Main">
-      <Stack.Screen name='Main'component={Main} />
+        <Stack.Screen
+          name='Main'
+          component={Main}
+          options={{ headerShown: false }} // Hide the header
+        />
         <Stack.Screen
           name='Home'
           component={Home}
@@ -26,7 +30,7 @@ function App() {
             headerLeft: null,
             headerTitle: () => (
               <Image
-                source={require('./Images/Aces1.png')} // Replace with the actual path to your logo
+                source={require('./assets/Aces1.png')} // Replace with the actual path to your logo
                 style={{ width: 120, height: 30 }}
                 resizeMode="contain"
               />
@@ -36,7 +40,7 @@ function App() {
         <Stack.Screen name='Rules' component={Rules} />
         <Stack.Screen name='Registration' component={Registration} />
         <Stack.Screen name='Tracks' component={Tracks} />
-        <Stack.Screen name='Importantdates' component={Importantdates} />
+        <Stack.Screen name='Important dates' component={Importantdates} />
         <Stack.Screen name='Awards' component={Awards} />
         <Stack.Screen name='Events' component={Events} />
       </Stack.Navigator>

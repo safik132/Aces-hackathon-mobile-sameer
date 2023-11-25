@@ -13,7 +13,7 @@ function Tracks() {
       <View style={styles.box}>
         <View style={styles.iconContainer}>
           <Image
-            source={require('../../Images/fintech.png')}
+            source={require('../../assets/fintech.png')}
             style={styles.icon}
           />
         </View>
@@ -24,7 +24,7 @@ function Tracks() {
       <View style={styles.box}>
         <View style={styles.iconContainer}>
           <Image
-            source={require('../../Images/hard.png')}
+            source={require('../../assets/hard.png')}
             style={styles.icon}
           />
         </View>
@@ -34,7 +34,7 @@ function Tracks() {
       <View style={styles.box}>
         <View style={styles.iconContainer}>
           <Image
-            source={require('../../Images/healthcare.png')}
+            source={require('../../assets/healthcare.png')}
             style={styles.icon}
           />
         </View>
@@ -44,7 +44,7 @@ function Tracks() {
       <View style={styles.box}>
         <View style={styles.iconContainer}>
           <Image
-            source={require('../../Images/software.png')}
+            source={require('../../assets/software.png')}
             style={styles.icon}
           />
         </View>

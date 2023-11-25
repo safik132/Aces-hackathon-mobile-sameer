@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Alert, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useCallback } from 'react';
+import { View, StyleSheet, Button, Alert, Image, TextInput, ActivityIndicator, Text,TouchableOpacity } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Main = () => {
   const navigation = useNavigation();
@@ -13,7 +14,25 @@ const Main = () => {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false); // New state to track if OTP is sent
+  const [loading, setLoading] = useState(false);
 
+  // Function to reset state
+  const resetState = () => {
+    setIsLogin(true);
+    setEmail('');
+    setName('');
+    setPhone('');
+    setOtp('');
+    setOtpSent(false);
+    setLoading(false);
+  };
+
+  // Reset state when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      resetState();
+    }, [])
+  );
   // Toggle between login and registration forms
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -24,19 +43,31 @@ const Main = () => {
     setOtpSent(false); // Reset otpSent when toggling forms
   };
 
+  // Function to store JWT token in AsyncStorage
+  const storeToken = async (token) => {
+    try {
+      await AsyncStorage.setItem('userToken', token);
+    } catch (e) {
+      console.error('Error saving token', e);
+    }
+  };
   // Send OTP to email
+   
   const sendOtp = async () => {
+    setLoading(true); // Start loading
     try {
       if (isLogin) {
-        await axios.post('http://localhost:5000/api/login', { email });
+        await axios.post('https://aces-hackathon.onrender.com/api/login', { email });
       } else {
-        await axios.post('http://localhost:5000/api/registeruser', { name, email, phone });
+        await axios.post('https://aces-hackathon.onrender.com/api/registeruser', { name, email, phone });
       }
       Alert.alert('OTP sent to your email');
       setOtpSent(true); // Update otpSent state to true when OTP is sent
     } catch (err) {
       console.error(err);
       Alert.alert('Error sending OTP');
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -53,10 +84,13 @@ const Main = () => {
   // Verify OTP for registration
   const verifyOtpAndRegister = async () => {
     try {
-      await axios.post('http://localhost:5000/api/verify-register', {
+      const response = await axios.post('https://aces-hackathon.onrender.com/api/verify-register', {
         email,
         otp
       });
+      console.log(response,'this is response')
+      // Store the token
+      await storeToken(response.data.token);
 
       Alert.alert('Registration successful');
       navigation.navigate('Home');
@@ -65,6 +99,7 @@ const Main = () => {
       Alert.alert('Registration failed');
     }
   };
+
 
   // Handle login
   const handleLogin = async () => {
@@ -79,11 +114,15 @@ const Main = () => {
   // Verify OTP for login
   const verifyOtpAndLogin = async () => {
     try {
-      await axios.post('http://localhost:5000/api/verify-login', {
+      const response = await axios.post('https://aces-hackathon.onrender.com/api/verify-login', {
         email,
         otp
       });
+      // console.log(response.data.token,'this is response for otp verification')
 
+      // Store the token
+      await storeToken(response.data.token);
+      
       Alert.alert('Login successful');
       navigation.navigate('Home');
     } catch (err) {
@@ -92,113 +131,127 @@ const Main = () => {
     }
   };
 
-  return (
-    <View style={styles.container}>
-    <View style={styles.logoContainer}>
-      <Image source={require('/Images/b.png')} style={styles.logo} />
-    </View>
-
-    <View style={styles.formContainer}>
-      {isLogin ? (
-        // Login Form
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-          />
-          {otpSent ? (
-            // OTP Input for Login
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="OTP"
-                value={otp}
-                onChangeText={setOtp}
-              />
-              <Button
-                title="Verify OTP & Login"
-                onPress={verifyOtpAndLogin}
-                color="#213966"
-              />
-            </>
-          ) : (
-            // Button Container for Login
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Send OTP"
-                onPress={handleLogin}
-                color="#213966" // Primary button color
-              />
-              <View style={styles.spacing} /> {/* Spacer between buttons */}
-              <Button
-                title="Go to Register"
-                onPress={toggleForm}
-                color="#213966" // Secondary button color
-              />
-            </View>
-          )}
-        </>
-      ) : (
-        // Registration Form
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Phone"
-            value={phone}
-            onChangeText={setPhone}
-          />
-          {otpSent ? (
-            // OTP Input for Registration
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="OTP"
-                value={otp}
-                onChangeText={setOtp}
-              />
-              <Button
-                title="Verify OTP & Register"
-                onPress={verifyOtpAndRegister}
-                color="#213966"
-              />
-            </>
-          ) : (
-            // Button Container for Registration
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Send OTP"
-                onPress={handleRegister}
-                color="#213966" // Primary button color
-              />
-              <View style={styles.spacing} /> {/* Spacer between buttons */}
-              <Button
-                title="Go to Login"
-                onPress={toggleForm}
-                color="#213966" // Secondary button color
-              />
-            </View>
-          )}
-        </>
-      )}
+  const LoadingOverlay = () => (
+  <View style={styles.loadingOverlay}>
+    <View style={styles.loadingBox}>
+      <ActivityIndicator size="large" color="#0000ff" />
+      <Text style={styles.loadingText}>Please wait...</Text>
     </View>
   </View>
+);
+
+
+  return (
+    <View style={styles.container}>
+    {loading && <LoadingOverlay />}
+      <View style={styles.logoContainer}>
+        <Image source={require('../../assets/b.png')} style={styles.logo} />
+      </View>
+
+      <View style={styles.formContainer}>
+        {isLogin ? (
+          // Login Form
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+            />
+            {otpSent ? (
+              // OTP Input for Login
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="OTP"
+                  value={otp}
+                  onChangeText={setOtp}
+                />
+                <Button
+                  title="Verify OTP & Login"
+                  onPress={verifyOtpAndLogin}
+                  color="#213966"
+                />
+              </>
+            ) : (
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                  style={[styles.button, { backgroundColor: '#213966' }]} 
+                  onPress={handleLogin}
+                >
+                  <Text style={styles.buttonText}>Send OTP</Text>
+                </TouchableOpacity>
+                <View style={styles.spacing} />
+                <TouchableOpacity 
+                  style={[styles.button, { backgroundColor: '#213966' }]} 
+                  onPress={toggleForm}
+                >
+                  <Text style={styles.buttonText}>Go to Register</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
+        ) : (
+          // Registration Form
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              value={name}
+              onChangeText={setName}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone"
+              value={phone}
+              onChangeText={setPhone}
+            />
+            {otpSent ? (
+              // OTP Input for Registration
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="OTP"
+                  value={otp}
+                  onChangeText={setOtp}
+                />
+                <Button
+                  title="Verify OTP & Register"
+                  onPress={verifyOtpAndRegister}
+                  color="#213966"
+                />
+              </>
+            ) : (
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                  style={[styles.button, { backgroundColor: '#213966' }]} 
+                  onPress={handleRegister}
+                >
+                  <Text style={styles.buttonText}>Send OTP</Text>
+                </TouchableOpacity>
+                <View style={styles.spacing} />
+                <TouchableOpacity 
+                  style={[styles.button, { backgroundColor: '#213966' }]} 
+                  onPress={toggleForm}
+                >
+                  <Text style={styles.buttonText}>Go to Login</Text>
+                </TouchableOpacity>
+              </View>
+
+            )}
+          </>
+        )}
+      </View>
+    </View>
   );
 };
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -209,8 +262,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 250,
     resizeMode: 'contain',
   },
   formContainer: {
@@ -237,14 +290,15 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#3498db',
     padding: 10,
-    borderRadius: 5,
-    width: '100%', // Full width within the formContainer
+    borderRadius: 35,
+    width: '50%', // Full width within the formContainer
     alignItems: 'center',
     marginBottom: 10,
+    marginLeft:-6,
+    
   },
   buttonText: {
     color: '#fff',
-    textAlign: 'center',
     fontSize: 16,
   },
   buttonContainer: {
@@ -262,12 +316,41 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: '#17a2b8', // Secondary button color (example: blue)
   },
-icon: {
+  icon: {
     width: 300,
     height: 300,
     resizeMode: 'contain',
     alignContent: 'center',
     marginTop: 10,
-},
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white
+    zIndex: 1000, // Ensure it's above all other content
+  },
+  loadingBox: {
+    padding: 20,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  loadingText: {
+    marginTop: 20,
+    color: '#000',
+  },
 });
 export default Main

@@ -1,21 +1,15 @@
 import React, { useState, useEffect  } from 'react';
 import {TouchableOpacity, Platform } from 'react-native';
-import {Alert, ScrollView, View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import {Alert, ScrollView, View, Text, TextInput, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
-import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
-import * as MediaLibrary from 'expo-media-library';
 
-
-// let DocumentPicker;
-// if (Platform.OS !== 'web') {
-//     DocumentPicker = require('react-native-document-picker').default;
-// }
 
 export default function Register() {
     // State for each form field
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [currentStep, setCurrentStep] = useState(1);
     const totalSteps = 3;
@@ -50,7 +44,7 @@ export default function Register() {
     const [teamMember5Gender, setTeamMember5Gender] = useState('M');
 
     const [track, setTrack] = useState('Generic Software');
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFile] = useState({});
 
     const nextStep = () => {
         if (currentStep < totalSteps) {
@@ -63,31 +57,44 @@ export default function Register() {
             setCurrentStep(currentStep - 1);
         }
     };
-
+    const handleDeleteFile = () => {
+        setSelectedFile({});
+    };
+    const LoadingOverlay = () => (
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingBox}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.loadingText}>Please wait...</Text>
+          </View>
+        </View>
+      );
+      
     const renderStep = () => {
         switch (currentStep) {
             case 1:
                 return (
                     <View>
-                        <Text style={styles.label}>Team Name:</Text>
+                         <Text style={styles.label}>
+                            Team Name:<Text style={styles.asterisk}>*</Text>
+                        </Text>
                         <TextInput style={styles.input} value={teamName} onChangeText={setTeamName} />
 
-                        <Text style={styles.label}>Team Leader Name:</Text>
+                        <Text style={styles.label}>Team Leader Name:<Text style={styles.asterisk}>*</Text></Text>
                         <TextInput style={styles.input} value={teamLeaderName} onChangeText={setTeamLeaderName} />
 
-                        <Text style={styles.label}>College:</Text>
+                        <Text style={styles.label}>College:<Text style={styles.asterisk}>*</Text></Text>
                         <TextInput style={styles.input} value={college} onChangeText={setCollege} />
 
-                        <Text style={styles.label}>Branch:</Text>
+                        <Text style={styles.label}>Branch:<Text style={styles.asterisk}>*</Text></Text>
                         <TextInput style={styles.input} value={branch} onChangeText={setBranch} />
 
-                        <Text style={styles.label}>Roll Number:</Text>
+                        <Text style={styles.label}>Roll Number:<Text style={styles.asterisk}>*</Text></Text>
                         <TextInput style={styles.input} value={rollNumber} onChangeText={setRollNumber} />
 
-                        <Text style={styles.label}>Email:</Text>
+                        <Text style={styles.label}>Email:<Text style={styles.asterisk}>*</Text></Text>
                         <TextInput style={styles.input} value={email} onChangeText={setEmail} />
 
-                        <Text style={styles.label}>Mobile Number:</Text>
+                        <Text style={styles.label}>Mobile Number:<Text style={styles.asterisk}>*</Text></Text>
                         <TextInput 
                             style={styles.input} 
                             value={mobileNumber} 
@@ -173,8 +180,8 @@ export default function Register() {
             case 3:
                 return (
                     <View>
-                    <Text style={styles.label}>Tracks:</Text>
-                    <Picker
+                    <Text style={styles.label}>Tracks:<Text style={styles.asterisk}>*</Text></Text>
+                  <Picker
                         selectedValue={track}
                         onValueChange={setTrack}
                         style={styles.picker}
@@ -184,23 +191,19 @@ export default function Register() {
                         <Picker.Item label="Health Care" value="Health Care" />
                         <Picker.Item label="Fin-tech" value="Fin-tech" />
                     </Picker>
-                    <Text style={styles.label}>File:</Text>
-                    {Platform.OS === 'web' ? (
-                        <>
-                            <input type="file" onChange={handleSelectFileWeb} accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation" />
-                            {selectedFileName && <Text style={styles.fileName}>{selectedFileName}</Text>}
-                        </>
-                    ) : (
-                        <View style={styles.uploadButtonContainer}>
+                    <Text style={styles.label}>File:<Text style={styles.asterisk}>*</Text></Text>
+            
+                    <View style={styles.uploadButtonContainer}>
                         <Button title="Upload File" onPress={handleSelectFile} />
-                        {selectedFileName && (
-                            <Text style={styles.fileName} numberOfLines={1} ellipsizeMode="tail">
-                                {selectedFileName}
-                            </Text>
-                        )}
                     </View>
-                    
+
+                    {selectedFile.name && (
+                        <View style={styles.fileInfoContainer}>
+                            <Text>Uploaded File: {selectedFile.name}</Text>
+                            <Button title="Delete File" onPress={handleDeleteFile} color="red" />
+                        </View>
                     )}
+            
                 </View>
                 );
             default:
@@ -208,81 +211,64 @@ export default function Register() {
         }
     };
 
-    useEffect(() => {
-        // Request permissions when the component mounts
-        requestFilePickerPermissions();
-    }, []);
 
-    const requestFilePickerPermissions = async () => {
-        try {
-            // Requesting permissions for accessing the file system
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-            if (status !== 'granted') {
-                alert('Permission to access files was denied');
-            }
-        } catch (error) {
-            console.error('Error requesting permissions:', error);
-        }
-    };
     
 
     const handleSelectFile = async () => {
+        
         try {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-            if (status !== 'granted') {
-                alert('Permission to access files was denied');
-                return;
-            }
     
             const result = await DocumentPicker.getDocumentAsync({ type: '*/*' });
-    
-            if (result.type === 'success') {
-                const fileInfo = await FileSystem.getInfoAsync(result.uri);
-    
+            console.log(result.assets[0],'this is in result')
+            if (result) {
+                const fileInfo = await FileSystem.getInfoAsync(result.assets[0].uri);
+                    console.log(fileInfo, 'this is file info')
                 // Set the selected file state
                 setSelectedFile({
-                    uri: result.uri,
-                    type: result.type,
-                    name: result.name,
-                    size: fileInfo.size,
+                    uri: result.assets[0].uri,
+                    type: result.assets[0].mimeType,
+                    name: result.assets[0].name,
+                    size: result.assets[0].size,
                 });
-                setSelectedFileName(result.name);
+                // setSelectedFileName(result.name);
+                console.log(selectedFile, 'after file uplaod')
             }
         } catch (error) {
-            console.error('Error picking document', error);
-        }
+            console.error('Error submitting form:', error);
+            Alert.alert("Registration Failed", "An error occurred during registration.");
+        } 
     };
     
-    
-    
-    
-    
-    
-      
-      
-
-    const handleSelectFileWeb = (event) => {
-        if (event.target.files && event.target.files[0]) {
-            setSelectedFile(event.target.files[0]);
-            setSelectedFileName(event.target.files[0].name); // Set the file name
-        }
+    const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
     };
-
+    const validateMobileNumber = (number) => {
+        return number.length === 10 && /^\d+$/.test(number);
+    };
+    
     const handleSubmit = async () => {
-      
-            // Check for empty fields
-            if (!teamName || !teamLeaderName || !college || !branch || !rollNumber || !email || !mobileNumber || !track || !selectedFile) {
-                console.log('Form values:', { teamName, teamLeaderName, college, branch, rollNumber, email, mobileNumber, track, selectedFile });
-                alert('Please fill in all fields. Check if there are empty or invalid fields.');
-                return;
-            }
-            
+         // Check for empty fields
+        if (!teamName || !teamLeaderName || !college || !branch || !rollNumber || !email || !mobileNumber || !track || !selectedFile) {
+            console.log('Form values:', { teamName, teamLeaderName, college, branch, rollNumber, email, mobileNumber, track, selectedFile });
+            alert('Please fill in all fields. Check if there are empty or invalid fields.');
+            setIsLoading(false);
+            return;
+        }
 
-            // Check if mobile number contains only numbers
-            if (!/^\d+$/.test(mobileNumber)) {
-                alert('Mobile number must contain only numbers');
-                return;
-            }
+        // Email validation
+        if (!validateEmail(email)) {
+            alert('Please enter a valid email address.');
+            setIsLoading(false);
+            return;
+        }
+
+        // Mobile number validation
+        if (!validateMobileNumber(mobileNumber)) {
+            alert('Mobile number must be exactly 10 digits.');
+            setIsLoading(false);
+            return;
+        }
         const formData = new FormData();
 
         // Appending text-based form data
@@ -311,17 +297,9 @@ export default function Register() {
         formData.append('team_member_5_roll_no', teamMember5RollNo);
         formData.append('team_member_5_gender', teamMember5Gender);
         if (selectedFile) {
-            // For web, the file is already a Blob or File object
-            // For native, you need to fetch the file first
-            if (Platform.OS === 'web') {
+            
                 formData.append('file', selectedFile);
-            } else {
-                formData.append('file', {
-                    uri: selectedFile.uri,
-                    type: selectedFile.type,
-                    name: selectedFile.name,
-                });
-            }
+
         }
 
         try {
@@ -343,8 +321,12 @@ export default function Register() {
             );
     
         } catch (error) {
+
             console.error('Error submitting form:', error);
             Alert.alert("Registration Failed", "An error occurred during registration.");
+        }
+        finally{
+            setIsLoading(false);
         }
 
         console.log('Team Name:', teamName);
@@ -363,6 +345,7 @@ export default function Register() {
 
     return (
         <ScrollView style={styles.container}>
+        {isLoading && <LoadingOverlay />}
         <Text style={styles.title}>Hack Revolution Registration</Text>
         <Text style={styles.infoText}>[Hackathon Info Here]</Text>
 
@@ -440,6 +423,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flex: 1,
         marginHorizontal: 5,
+        marginBottom:6
     },
     backButton: {
         backgroundColor: '#213966', // Or any other color for the back button
@@ -454,5 +438,41 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 20,
     },
+    asterisk: {
+        color: 'red',
+    },
+    fileInfoContainer: {
+        marginVertical: 10,
+        alignItems: 'center',
+    },
+    loadingOverlay: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white
+        zIndex: 1000, // Ensure it's on top of all other content
+    },
+    loadingBox: {
+        padding: 20,
+        backgroundColor: '#fff', // White background for the box
+        borderRadius: 10,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    loadingText: {
+        marginTop: 10,
+        color: '#000', // Black text
+        fontSize: 18, // Slightly larger font size
+    },
 });
-

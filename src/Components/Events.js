@@ -7,7 +7,7 @@ function Events() {
     <View style={styles.main}>
     
     <Image
-   source={require('../../Images/HackRevolution.jpg')}
+   source={require('../../assets/HackRevolution.jpg')}
    style={styles.icon1}
  /> 
  <FooterButtons/>
