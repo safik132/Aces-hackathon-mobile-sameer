@@ -3,15 +3,11 @@
     "name": "hackathon",
     "slug": "hackathon",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "android": {
-      "permissions": [
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
-      ],
-      "package": "com.acesindiadev.hackathon"
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+      "package": "com.acesindiadev.hackathon",
+      "googleServicesFile": "./google-services.json"
     },
     "ios": {
       "infoPlist": {

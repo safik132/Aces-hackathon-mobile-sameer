@@ -1,48 +1,51 @@
-import React from 'react';
-import { Image, StatusBar } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-
-import Home from './src/Components/Home';
-import Rules from './src/Components/Rules';
-import Registration from './src/Components/Registration';
-import Tracks from './src/Components/Tracks';
-import Importantdates from './src/Components/Importantdates';
-import Awards from './src/Components/Awards';
-import Events from './src/Components/Events';
-import Main from './src/Components/Main';
+import React, { useEffect } from "react";
+import { Image, StatusBar } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import registerNNPushToken, { getPushDataObject } from "native-notify";
+import Home from "./src/Components/Home";
+import Rules from "./src/Components/Rules";
+import Registration from "./src/Components/Registration";
+import Tracks from "./src/Components/Tracks";
+import Importantdates from "./src/Components/Importantdates";
+import Awards from "./src/Components/Awards";
+import Events from "./src/Components/Events";
+import Main from "./src/Components/Main";
+import Notifications from "./src/Components/Notifications";
 
 const Stack = createStackNavigator();
 
 function App() {
+  registerNNPushToken(15368, "ux61qbAfMOOHd6vFroOD7i");
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
-          name='Main'
+          name="Main"
           component={Main}
           options={{ headerShown: false }} // Hide the header
         />
         <Stack.Screen
-          name='Home'
+          name="Home"
           component={Home}
           options={{
             headerLeft: null,
             headerTitle: () => (
               <Image
-                source={require('./assets/Aces1.png')} // Replace with the actual path to your logo
+                source={require("./assets/Aces1.png")} // Replace with the actual path to your logo
                 style={{ width: 120, height: 30 }}
                 resizeMode="contain"
               />
             ),
           }}
         />
-        <Stack.Screen name='Rules' component={Rules} />
-        <Stack.Screen name='Registration' component={Registration} />
-        <Stack.Screen name='Tracks' component={Tracks} />
-        <Stack.Screen name='Important dates' component={Importantdates} />
-        <Stack.Screen name='Awards' component={Awards} />
-        <Stack.Screen name='Events' component={Events} />
+        <Stack.Screen name="Rules" component={Rules} />
+        <Stack.Screen name="Registration" component={Registration} />
+        <Stack.Screen name="Tracks" component={Tracks} />
+        <Stack.Screen name="Important dates" component={Importantdates} />
+        <Stack.Screen name="Awards" component={Awards} />
+        <Stack.Screen name="Events" component={Events} />
+        <Stack.Screen name="Notifications" component={Notifications} />
       </Stack.Navigator>
     </NavigationContainer>
   );

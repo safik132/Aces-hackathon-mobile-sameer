@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1024340628711",
+    "project_id": "aceshubmain",
+    "storage_bucket": "aceshubmain.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024340628711:android:f064c75302fd89f730be42",
+        "android_client_info": {
+          "package_name": "com.acesindiadev.hackathon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAB1sNFo9Rc-L6vrbMsTbX8IJ9mSHLLmv8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

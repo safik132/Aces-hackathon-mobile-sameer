@@ -1,18 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import  Swiper  from 'react-native-swiper';
+import React from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import Swiper from "react-native-swiper";
 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
-import FooterButtons from './FooterButtons';
+import FooterButtons from "./FooterButtons";
 
 const Home = () => {
   const navigation = useNavigation();
 
   const data = [
-    { image: require('../../assets/Img1.png'), screen: 'Home' },
-    { image: require('../../assets/comingsoon.png'), screen: 'Home' },
-    { title: 'Item 3', image: require('../../assets/comingsoon.png'), screen: 'Rules' },
+    { image: require("../../assets/Img1.png"), screen: "Home" },
+    { image: require("../../assets/comingsoon.png"), screen: "Home" },
+    {
+      title: "Item 3",
+      image: require("../../assets/comingsoon.png"),
+      screen: "Rules",
+    },
     // Add more items as needed
   ];
 
@@ -35,12 +39,48 @@ const Home = () => {
   };
 
   const boxesData = [
-    { id: 1, label: 'Registrations', icon: require('../../assets/Registration.png'), screen: 'Registration' },
-    { id: 2, label: 'Important Dates', icon: require('../../assets/Dates.png'), screen: 'Important dates' },
-    { id: 3, label: 'Tracks', icon: require('../../assets/Bullet.png'), screen: 'Tracks' },
-    { id: 4, label: 'Awards', icon: require('../../assets/Prize.png'), screen: 'Awards' },
-    { id: 5, label: 'Rules & Regulations', icon: require('../../assets/Rules.png'), screen: 'Rules' },
-    { id: 6, label: 'Events', icon: require('../../assets/Event.png'), screen: 'Events' },
+    {
+      id: 1,
+      label: "Registrations",
+      icon: require("../../assets/Registration.png"),
+      screen: "Registration",
+    },
+    {
+      id: 2,
+      label: "Important Dates",
+      icon: require("../../assets/Dates.png"),
+      screen: "Important dates",
+    },
+    {
+      id: 3,
+      label: "Tracks",
+      icon: require("../../assets/Bullet.png"),
+      screen: "Tracks",
+    },
+    {
+      id: 4,
+      label: "Awards",
+      icon: require("../../assets/Prize.png"),
+      screen: "Awards",
+    },
+    {
+      id: 5,
+      label: "Rules & Regulations",
+      icon: require("../../assets/Rules.png"),
+      screen: "Rules",
+    },
+    {
+      id: 6,
+      label: "Events",
+      icon: require("../../assets/Event.png"),
+      screen: "Events",
+    },
+    {
+      id: 7,
+      label: "Notifications",
+      icon: require("../../assets/Event.png"),
+      screen: "Notifications",
+    },
   ];
 
   const handleBoxPress = (item) => {
@@ -77,28 +117,26 @@ const Home = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
     flex: 1,
-    
   },
   slide: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
     borderRadius: 8,
-    width: '90%',
+    width: "90%",
     height: 300, // Increase the height of each slide
-    marginLeft:15,
-    marginTop:30
+    marginLeft: 15,
+    marginTop: 30,
   },
 
   image: {
-    width: '100%',
-    height: '95%', // Ensure the image fills the entire slide
+    width: "100%",
+    height: "95%", // Ensure the image fills the entire slide
     borderRadius: 8,
   },
   title: {
@@ -106,37 +144,34 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   paginationContainer: {
-    paddingBottom:20
-    
-    
+    paddingBottom: 20,
   },
   paginationDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginHorizontal: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   paginationDotActive: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginHorizontal: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.92)',
+    backgroundColor: "rgba(0, 0, 0, 0.92)",
   },
   row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginTop: 30, // Increase the top margin to bring buttons down
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
   },
 
   box: {
-    alignItems: 'center',
-    width: '35%',
+    alignItems: "center",
+    width: "35%",
     marginBottom: 20,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     padding: 4,
@@ -151,10 +186,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   footer: {
-    width: '100%',
-    position: 'absolute', // Positioning the footer absolutely
+    width: "100%",
+    position: "absolute", // Positioning the footer absolutely
     bottom: 0, // At the bottom of the container
-},
+  },
 });
 
 export default Home;
