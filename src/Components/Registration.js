@@ -1,13 +1,15 @@
 import React, { useState, useEffect  } from 'react';
-import {TouchableOpacity, Platform } from 'react-native';
+import {TouchableOpacity, Platform,BackHandler } from 'react-native';
 import {Alert, ScrollView, View, Text, TextInput, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from "@react-navigation/native";
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
-
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Register() {
+    const navigation = useNavigation();
     // State for each form field
     const [isLoading, setIsLoading] = useState(false);
     const [selectedFileName, setSelectedFileName] = useState('');
@@ -46,12 +48,73 @@ export default function Register() {
     const [track, setTrack] = useState('Generic Software');
     const [selectedFile, setSelectedFile] = useState({});
 
+    // Inside your Importantdates component
+    useFocusEffect(
+        React.useCallback(() => {
+          const onBackPress = () => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+              return true; // Prevents default back button behavior
+            }
+            // Default behavior (exit the app) if no screens in the stack
+            return false;
+          };
+    
+          BackHandler.addEventListener('hardwareBackPress', onBackPress);
+          return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }, [])
+      );
+     const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
+
+    const validateMobileNumber = (number) => {
+        return number.length === 10 && /^\d+$/.test(number);
+    };
+
+    const validateStep1 = () => {
+        // Add validation logic for Step 1
+        if (!teamName || !teamLeaderName || !college || !branch || !rollNumber || !email || !mobileNumber) {
+            alert('Please fill in all required fields to proceed.');
+            return false;
+        }
+        if (!validateEmail(email)) {
+            alert('Please enter a valid email address.');
+            return false;
+        }
+        if (!validateMobileNumber(mobileNumber)) {
+            alert('Mobile number must be exactly 10 digits.');
+            return false;
+        }
+        return true;
+    };
+
+    const validateStep2 = () => {
+        // Add validation logic for Step 2
+        // Example: Check if team member names are filled
+        return true; // return false if any validation fails
+    };
+
+    // Similar validation functions for other steps...
+
     const nextStep = () => {
-        if (currentStep < totalSteps) {
+        let isValid = false;
+
+        switch (currentStep) {
+            case 1:
+                isValid = validateStep1();
+                break;
+            case 2:
+                isValid = validateStep2();
+                break;
+            // Add cases for other steps...
+        }
+
+        if (isValid && currentStep < totalSteps) {
             setCurrentStep(currentStep + 1);
         }
     };
-
     const prevStep = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
@@ -220,6 +283,12 @@ export default function Register() {
     
             const result = await DocumentPicker.getDocumentAsync({ type: '*/*' });
             console.log(result.assets[0],'this is in result')
+            // Check if the file selection was cancelled
+            if (result.type === 'cancel') {
+                console.log('File selection was cancelled.');
+                setCurrentStep(3); // Redirect back to step 3
+                return; // Exit the function if no file was selected
+            }
             if (result) {
                 const fileInfo = await FileSystem.getInfoAsync(result.assets[0].uri);
                     console.log(fileInfo, 'this is file info')
@@ -239,13 +308,7 @@ export default function Register() {
         } 
     };
     
-    const validateEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    };
-    const validateMobileNumber = (number) => {
-        return number.length === 10 && /^\d+$/.test(number);
-    };
+    
     
     const handleSubmit = async () => {
          // Check for empty fields
@@ -316,7 +379,7 @@ export default function Register() {
                 "Registration Successful",
                 "Thank you for registering for Aces Hackathon. Happy Coding!",
                 [
-                    { text: "OK", onPress: () => console.log("OK Pressed") }
+                    { text: "OK", onPress: () => navigation.navigate("Home") }
                 ]
             );
     
@@ -402,9 +465,9 @@ const styles = StyleSheet.create({
     picker: {
         backgroundColor: '#ffffff',
         marginBottom: 15,
-        borderRadius: 10, // Rounded corners
+        borderRadius: 30,
         borderWidth: 1,
-        borderColor: '#c4c4c4', // Subtle border
+        borderColor: '#c4c4c4',
     },
     uploadButtonContainer: {
         marginBottom: 15,

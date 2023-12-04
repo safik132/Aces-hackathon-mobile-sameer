@@ -1,8 +1,27 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Linking ,BackHandler,Animated} from 'react-native';
 import FooterButtons from './FooterButtons';
+import { useFocusEffect ,useNavigation} from '@react-navigation/native';
+function Tracks() { 
+  const navigation = useNavigation();
+  // Inside your Importantdates component
+  const av = new Animated.Value(0);
+  av.addListener(() => {return});
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+          return true; // Prevents default back button behavior
+        }
+        // Default behavior (exit the app) if no screens in the stack
+        return false;
+      };
 
-function Tracks() {
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
   return (
     <View style={styles.main}>
     <ScrollView>

@@ -1,12 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback,useEffect,useContext } from 'react';
 import { View, StyleSheet, Button, Alert, Image, TextInput, ActivityIndicator, Text,TouchableOpacity } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import * as Notifications from 'expo-notifications';
+import * as MediaLibrary from 'expo-media-library';
+import { AuthContext } from './AuthContext';
 const Main = () => {
   const navigation = useNavigation();
-
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   // State variables
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -16,6 +18,28 @@ const Main = () => {
   const [otpSent, setOtpSent] = useState(false); // New state to track if OTP is sent
   const [loading, setLoading] = useState(false);
 
+
+  useEffect(() => {
+    const requestNotificationPermission = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('We need notification permissions to make this work!');
+      }
+    };
+  
+    requestNotificationPermission();
+  }, []);
+  
+useEffect(() => {
+  const requestMediaLibraryPermissions = async () => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== 'granted') {
+      alert('We need camera roll permissions to make this work!');
+    }
+  };
+
+  requestMediaLibraryPermissions();
+}, []);
   // Function to reset state
   const resetState = () => {
     setIsLogin(true);
@@ -52,7 +76,31 @@ const Main = () => {
     }
   };
   // Send OTP to email
-   
+  useEffect(() => {
+    const checkTokenAndNavigate = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+
+        if (token && isLoggedIn === 'true') {
+          // Navigate to Home if token exists and user is marked as logged in
+          navigation.navigate('Home');
+        } else {
+          // Stay on the Main page
+          navigation.navigate('Main');
+        }
+      } catch (error) {
+        console.error('Error checking token:', error);
+      }
+    };
+
+    checkTokenAndNavigate();
+  }, [navigation]);
+  
+  // Check token on app start
+  // On app start
+  
+  
   const sendOtp = async () => {
     setLoading(true); // Start loading
     try {
@@ -91,7 +139,8 @@ const Main = () => {
       console.log(response,'this is response')
       // Store the token
       await storeToken(response.data.token);
-
+      setIsLoggedIn(true);
+      await AsyncStorage.setItem('isLoggedIn', 'true');
       Alert.alert('Registration successful');
       navigation.navigate('Home');
     } catch (err) {
@@ -122,7 +171,8 @@ const Main = () => {
 
       // Store the token
       await storeToken(response.data.token);
-      
+      setIsLoggedIn(true);
+      await AsyncStorage.setItem('isLoggedIn', 'true');
       Alert.alert('Login successful');
       navigation.navigate('Home');
     } catch (err) {

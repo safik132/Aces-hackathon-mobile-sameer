@@ -1,40 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { View, Image, Text, FlatList, StyleSheet } from "react-native";
+import { View, Image, Text, FlatList, StyleSheet ,BackHandler} from "react-native";
 import FooterButtons from "./FooterButtons";
 import { getNotificationInbox } from "native-notify";
+import { useFocusEffect,useNavigation } from '@react-navigation/native';
 
 function Notifications() {
   const [data, setData] = useState([]);
   const [values, setValues] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
+  // Inside your Importantdates component
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+          return true; // Prevents default back button behavior
+        }
+        // Default behavior (exit the app) if no screens in the stack
+        return false;
+      };
 
-  useEffect(async () => {
-    let notifications = await getNotificationInbox(
-      15368,
-      "ux61qbAfMOOHd6vFroOD7i"
-    );
-    const pushDataArray = notifications.map((notification) => {
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
+  useEffect(() => {
+    // Define an async function inside the useEffect
+    const fetchData = async () => {
       try {
-        // Parsing the pushData JSON string into an object
-        const pushDataObject = JSON.parse(notification.pushData);
-        return pushDataObject;
-      } catch (error) {
-        console.error(
-          `Error parsing pushData for notification_id ${notification.notification_id}: ${error.message}`
+        let notifications = await getNotificationInbox(
+          15368,
+          "ux61qbAfMOOHd6vFroOD7i"
         );
-        return null;
+
+        const pushDataArray = notifications.map((notification) => {
+          try {
+            const pushDataObject = JSON.parse(notification.pushData);
+            return pushDataObject;
+          } catch (error) {
+            console.error(
+              `Error parsing pushData for notification_id ${notification.notification_id}: ${error.message}`
+            );
+            return null;
+          }
+        });
+
+        const keysArray = pushDataArray.map((pushDataObject) => {
+          const keys = Object.values(pushDataObject);
+          return keys;
+        });
+
+        setValues(keysArray);
+        setData(notifications);
+      } catch (error) {
+        console.error(`Error fetching notifications: ${error.message}`);
+        // Handle errors if necessary
       }
-    });
+    };
 
-    // console.log(pushDataArray);
-    const keysArray = pushDataArray.map((pushDataObject) => {
-      const keys = Object.values(pushDataObject);
-      return keys;
-    });
-
-    setValues(keysArray);
-    setData(notifications);
+    // Call the async function immediately
+    fetchData();
   }, []);
   // useEffect(() => {
   //   console.log(pushDataObject, "test");
@@ -44,49 +71,45 @@ function Notifications() {
     setModalVisible(true);
   };
   return (
-    <View style={styles.main}>
+    <View style={styles.container}>
+    <View style={styles.listContainer}>
       <FlatList
         data={data}
         keyExtractor={(item) => item.notification_id.toString()}
-        renderItem={({ item, index }) => {
-          return (
-            <View style={styles.main}>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.text}>{item.date}</Text>
-              <Text style={styles.text}>{item.message}</Text>
-              {/* <TouchableOpacity onPress={() => handlePress(index)}>
-                <Image
-                  source={require("../../assets/HackRevolution.jpg")}
-                  style={styles.modalImage1}
-                />
-              </TouchableOpacity> */}
-            </View>
-          );
-        }}
+        renderItem={({ item }) => (
+          <View style={styles.notificationItem}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.text}>{item.date}</Text>
+            <Text style={styles.text}>{item.message}</Text>
+            {/* Other components */}
+          </View>
+        )}
       />
-      {/* <Modal visible={modalVisible} transparent={true}>
-        <View style={styles.modalContainer}>
-          <Image
-            source={require("../../assets/HackRevolution.jpg")}
-            style={styles.modalImage}
-          />
-          <Button title="Close" onPress={() => setModalVisible(false)} />
-        </View>
-      </Modal> */}
-      <FooterButtons />
+      {/* Modal component if used */}
     </View>
+    <FooterButtons />
+  </View>
   );
 }
 const styles = StyleSheet.create({
   main: {
     backgroundColor: "#F3F3F3",
-    paddingVertical: 20,
     flex: 1,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
     margin: 6,
+    
+  },
+  main1: {
+    backgroundColor: "#F3F3F3",
+    flex: 1,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    
+    
   },
   icon1: {
     width: 350,
@@ -96,19 +119,38 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 300,
   },
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  listContainer: {
+    flex: 1,
+    padding: 10,
+  },
+  notificationItem: {
+    backgroundColor: "#F3F3F3",
+    borderRadius: 8,
+    padding: 15,
+    marginVertical: 6,
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   text: {
-    fontSize: 20,
-    fontWeight: "300",
-    textAlign: "left",
+    fontSize: 18,
     color: "black",
     marginTop: 8,
   },
   title: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold",
-    textAlign: "left",
     color: "black",
-    marginTop: 8,
   },
   modalContainer: {
     flex: 1,

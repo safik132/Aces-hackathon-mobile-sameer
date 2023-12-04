@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { Image, StatusBar,TouchableOpacity,View,Animated } from "react-native";
 import { NavigationContainer,useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -15,15 +15,24 @@ import Notifications from "./src/Components/Notifications";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ExpoNotifications from 'expo-notifications';
 import * as MediaLibrary from 'expo-media-library';
-import { AuthProvider } from "./src/Components/AuthContext";
+import {AuthContext } from "./src/Components/AuthContext";
+
 const Stack = createStackNavigator();
 
 
 
-function App() {
-  const [initialRoute, setInitialRoute] = useState("Main"); // Default to 'Main'
+function MainApp() {
+   // Default to 'Main'
+  const { isLoggedIn, setIsLoggedIn} = useContext(AuthContext);
   // Custom Header with Notification Icon
-  
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+      setIsLoggedIn(!!token);
+    };
+
+    checkToken();
+  }, [setIsLoggedIn]);
   const CustomHeader = () => {
     const navigation = useNavigation();
     return (
@@ -33,7 +42,7 @@ function App() {
           style={{ width: 120, height: 30 }}
           resizeMode="contain"
         />
-        {/*<TouchableOpacity 
+        <TouchableOpacity 
           onPress={() => navigation.navigate('Notifications')}
           style={{ padding: 10 }} // Padding for easier touch
         >
@@ -41,28 +50,12 @@ function App() {
             source={require("./assets/notification.png")} // Replace with your notification icon path
             style={{ width: 24, height: 24 }}
           />
-    </TouchableOpacity>*/}
+        </TouchableOpacity>
       </View>
     );
   };
-  useEffect(() => {
-  const checkToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("userToken");
-      console.log("Token check:", token); // Debugging log
-      if (token) {
-        setInitialRoute("Home");
-      } else {
-        setInitialRoute("Main");
-      }
-    } catch (e) {
-      console.error('Error reading token', e);
-    }
-  };
-
-  checkToken();
-}, []);
-
+  
+  
   const requestPermissions = async () => {
     // Request Notification Permissions
     const notificationStatus = await ExpoNotifications.requestPermissionsAsync();
@@ -81,26 +74,28 @@ function App() {
   
   registerNNPushToken(15368, "ux61qbAfMOOHd6vFroOD7i");
   return (
-    <AuthProvider>
-    <StatusBar 
-        barStyle="light-content" // Makes text/icons dark
-        backgroundColor="#213966" // Sets background to white
-      />
+    
+    
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
+    
+      <Stack.Navigator initialRouteName="Main">
+     
+      {isLoggedIn ? (
+        <>
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ headerTitle: () => <CustomHeader /> }}
+          />
+          {/* Other screens for logged-in users */}
+        </>
+      ) : (
         <Stack.Screen
           name="Main"
           component={Main}
-          options={{ headerShown: false }} // Hide the header
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{
-              headerLeft: null,
-              headerTitle: () => <CustomHeader />,
-            }}
-          />
+      )}
         <Stack.Screen name="Rules" component={Rules} />
         <Stack.Screen name="Registration" component={Registration} />
         <Stack.Screen name="Tracks" component={Tracks} />
@@ -111,8 +106,8 @@ function App() {
         
       </Stack.Navigator>
     </NavigationContainer>
-    </AuthProvider>
+    
   );
 }
 
-export default App;
+export default MainApp;

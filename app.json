@@ -1,18 +1,42 @@
 {
   "expo": {
-    "name": "hackathon",
+    "name": "Aces Hub",
     "slug": "hackathon",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "icon": "./assets/aces-icon3.png",
+    "splash": {
+      "image": "./assets/b.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#213966"
+    },
     "android": {
-      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "package": "com.acesindiadev.hackathon",
-      "googleServicesFile": "./google-services.json"
+      "versioncode": 1,
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/aces-icon3.png"
+        
+      },
+      "notification": {
+        "icon": "./assets/notification.png"
+        
+      }
     },
     "ios": {
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "We need access to your photo library"
-      }
+      },
+      "icon": "./assets/aces-icon3.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.acesindiadev.hackathon",
+      "buildNumber":"1"
     },
     "extra": {
       "eas": {

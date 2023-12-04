@@ -1,8 +1,27 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, Text, ScrollView,BackHandler } from 'react-native';
 import FooterButtons from './FooterButtons';
+import { useFocusEffect,useNavigation } from '@react-navigation/native';
 
 function Awards() {
+ 
+  const navigation = useNavigation();
+// Inside your Importantdates component
+useFocusEffect(
+  React.useCallback(() => {
+    const onBackPress = () => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+        return true; // Prevents default back button behavior
+      }
+      // Default behavior (exit the app) if no screens in the stack
+      return false;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  }, [])
+);
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
