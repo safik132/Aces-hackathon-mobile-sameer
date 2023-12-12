@@ -312,6 +312,7 @@ export default function Register() {
     
     const handleSubmit = async () => {
          // Check for empty fields
+        setIsLoading(true);
         if (!teamName || !teamLeaderName || !college || !branch || !rollNumber || !email || !mobileNumber || !track || !selectedFile) {
             console.log('Form values:', { teamName, teamLeaderName, college, branch, rollNumber, email, mobileNumber, track, selectedFile });
             alert('Please fill in all fields. Check if there are empty or invalid fields.');
@@ -366,7 +367,7 @@ export default function Register() {
         }
 
         try {
-            const response = await axios.post("https://aces-hackathon.onrender.com/api/register", formData, {
+            const response = await axios.post("https://s-hub-backend.onrender.com/api/register", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -410,7 +411,7 @@ export default function Register() {
         <ScrollView style={styles.container}>
         {isLoading && <LoadingOverlay />}
         <Text style={styles.title}>Hack Revolution Registration</Text>
-        <Text style={styles.infoText}>[Hackathon Info Here]</Text>
+        
 
         {renderStep()}
 

@@ -3,12 +3,21 @@ import { View, Text, StyleSheet, Image, TouchableOpacity,BackHandler,Alert,Anima
 import Swiper from 'react-native-web-swiper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation,useFocusEffect } from "@react-navigation/native";
+import { MaterialIcons } from '@expo/vector-icons';
 
 import FooterButtons from "./FooterButtons";
 
+
 const Home = () => {
   const navigation = useNavigation();
+  const [registrationIcon, setRegistrationIcon] = useState(require("../../assets/Registration.png"));
   
+
+  const handleIconChange = () => {
+    // Update the registration icon based on your logic
+    setRegistrationIcon(require("../../assets/Registration.png"));
+  };
+
   const av = new Animated.Value(0);
   av.addListener(() => {return});
 
@@ -135,21 +144,32 @@ useFocusEffect(
           </TouchableOpacity>
         ))}
 
-        {/* Logout Button */}
-        <View style={styles.logoutButton}>
-        <Image 
-          source={require("../../assets/logout.png")}
-          style={styles.logoutIcon}
-        />
-        <TouchableOpacity 
-          onPress={handleLogout} 
-          style={styles.customButton}
-        >
-          <Text style={styles.buttonText}>Logout</Text>
-        </TouchableOpacity>
-  </View>
+        
 </View>
-      <FooterButtons />
+<View style={styles.footer}>
+{/* Registration Button */}
+<TouchableOpacity
+  style={styles.footerButton}
+  onPress={() => navigation.navigate('Registration')}
+>
+  <Image source={registrationIcon} style={{ width: 20, height: 20 ,tintColor:"white"}} />
+  <Text style={styles.footerButtonText}>Registration</Text>
+</TouchableOpacity>
+ 
+
+{/* Home Button */}
+<TouchableOpacity style={styles.footerButton}>
+ <MaterialIcons name="home" size={20} color="white" />
+ <Text style={styles.footerButtonText}>Home</Text>
+</TouchableOpacity>
+{/* Logout Button */}
+<TouchableOpacity style={styles.footerButton} onPress={handleLogout}>
+<MaterialIcons name="exit-to-app" size={20} color="white" />
+<Text style={styles.footerButtonText}>Logout</Text>
+</TouchableOpacity>
+
+
+</View>
     </View>
   );
 };
@@ -254,13 +274,35 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12
   },
-  footer: {
-    width: "100%",
-    position: "absolute", // Positioning the footer absolutely
-    bottom: 0, // At the bottom of the container
-  },
+
   swiperButton: {
     display: 'none', // Hide buttons
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    backgroundColor: '#213966',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#ddd', // Add a border to separate footer from content
+  },
+  buttonIcon: {
+    width: 20,   // Set your desired width
+    height: 20,  // Set your desired height
+    marginRight: 5,  // Add some margin to the right of the icon
+  },
+  footerButton: {
+    alignItems: 'center',  // Center items horizontally in the column
+    justifyContent: 'center', // Center items vertically
+    padding: 10,
+    backgroundColor: '#213966',
+    borderRadius: 5,
+    flexDirection: 'column',  // Layout children in a column
+  },
+  footerButtonText: {
+    color: '#fff',
+    marginTop: 5, // Add some space between the icon and the text
   },
 });
 

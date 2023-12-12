@@ -122,12 +122,13 @@ function FooterButtons() {
 
   return (
     <View style={styles.container}>
-      {renderButton("home", "Home", "Home")}
+      
       {renderButton(
         require("../../assets/Registration.png"),
         "Registration",
         "Registration"
       )}
+      {renderButton("home", "Home", "Home")}
       {renderButton(require("../../assets/notification.png"), "Notifications", "Notifications")}
     </View>
   );

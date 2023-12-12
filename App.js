@@ -33,7 +33,7 @@ function App() {
           style={{ width: 120, height: 30 }}
           resizeMode="contain"
         />
-        {/*<TouchableOpacity 
+        <TouchableOpacity 
           onPress={() => navigation.navigate('Notifications')}
           style={{ padding: 10 }} // Padding for easier touch
         >
@@ -41,7 +41,7 @@ function App() {
             source={require("./assets/notification.png")} // Replace with your notification icon path
             style={{ width: 24, height: 24 }}
           />
-    </TouchableOpacity>*/}
+    </TouchableOpacity>
       </View>
     );
   };

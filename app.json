@@ -2,7 +2,7 @@
   "expo": {
     "name": "Aces Hub",
     "slug": "hackathon",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -18,7 +18,7 @@
         "WRITE_EXTERNAL_STORAGE"
       ],
       "package": "com.acesindiadev.hackathon",
-      "versioncode": 1,
+      "versionCode": 3,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/aces-icon3.png"

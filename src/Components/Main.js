@@ -105,9 +105,9 @@ useEffect(() => {
     setLoading(true); // Start loading
     try {
       if (isLogin) {
-        await axios.post('https://aces-hackathon.onrender.com/api/login', { email });
+        await axios.post('https://s-hub-backend.onrender.com/api/login', { email });
       } else {
-        await axios.post('https://aces-hackathon.onrender.com/api/registeruser', { name, email, phone });
+        await axios.post('https://s-hub-backend.onrender.com/api/registeruser', { name, email, phone });
       }
       Alert.alert('OTP sent to your email');
       setOtpSent(true); // Update otpSent state to true when OTP is sent
@@ -118,6 +118,8 @@ useEffect(() => {
       setLoading(false); // Stop loading
     }
   };
+
+  
 
   // Handle registration
   const handleRegister = async () => {
@@ -132,9 +134,11 @@ useEffect(() => {
   // Verify OTP for registration
   const verifyOtpAndRegister = async () => {
     try {
-      const response = await axios.post('https://aces-hackathon.onrender.com/api/verify-register', {
+      const response = await axios.post('https://s-hub-backend.onrender.com/api/verify-register', {
         email,
-        otp
+        otp,
+        name, 
+        phone  
       });
       console.log(response,'this is response')
       // Store the token
@@ -145,6 +149,7 @@ useEffect(() => {
       navigation.navigate('Home');
     } catch (err) {
       console.error(err);
+      console.log(err.response.data)
       Alert.alert('Registration failed');
     }
   };
@@ -163,7 +168,7 @@ useEffect(() => {
   // Verify OTP for login
   const verifyOtpAndLogin = async () => {
     try {
-      const response = await axios.post('https://aces-hackathon.onrender.com/api/verify-login', {
+      const response = await axios.post('https://s-hub-backend.onrender.com/api/verify-login', {
         email,
         otp
       });
