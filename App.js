@@ -6,6 +6,7 @@ import registerNNPushToken, { getPushDataObject } from "native-notify";
 import Home from "./src/Components/Home";
 import Rules from "./src/Components/Rules";
 import Registration from "./src/Components/Registration";
+import SoloRegister from "./src/Components/Soloregistration";
 import Tracks from "./src/Components/Tracks";
 import Importantdates from "./src/Components/Importantdates";
 import Awards from "./src/Components/Awards";
@@ -16,6 +17,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ExpoNotifications from 'expo-notifications';
 import * as MediaLibrary from 'expo-media-library';
 import { AuthProvider } from "./src/Components/AuthContext";
+import * as Updates from 'expo-updates';
+import { Alert } from 'react-native';
 const Stack = createStackNavigator();
 
 
@@ -80,6 +83,35 @@ function App() {
   requestPermissions();
   
   registerNNPushToken(15368, "ux61qbAfMOOHd6vFroOD7i");
+
+  useEffect(() => {
+    
+    checkForUpdates();
+  }, []);
+  
+  const checkForUpdates = async () => {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        Alert.alert(
+          "Update Available",
+          "New version of the app is available. Do you want to update?",
+          [
+            { text: "Later", onPress: () => console.log("Update postponed") },
+            { text: "Update", onPress: () => doUpdate() }
+          ]
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  
+  const doUpdate = async () => {
+    await Updates.fetchUpdateAsync();
+    Updates.reloadAsync();
+  };
+  
   return (
     <AuthProvider>
     <StatusBar 
@@ -102,7 +134,8 @@ function App() {
             }}
           />
         <Stack.Screen name="Rules" component={Rules} />
-        <Stack.Screen name="Registration" component={Registration} />
+        <Stack.Screen name="Registration" options={{ headerShown: false }} component={Registration} />
+        <Stack.Screen name="SoloRegister" options={{ headerShown: false }} component={SoloRegister} />
         <Stack.Screen name="Tracks" component={Tracks} />
         <Stack.Screen name="Important dates" component={Importantdates} />
         <Stack.Screen name="Awards" component={Awards} />

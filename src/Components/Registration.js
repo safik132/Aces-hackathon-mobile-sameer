@@ -47,6 +47,35 @@ export default function Register() {
 
     const [track, setTrack] = useState('Generic Software');
     const [selectedFile, setSelectedFile] = useState({});
+    const [registrationType, setRegistrationType] = useState('team');
+
+    const handleRegistrationTypeChange = (type) => {
+        setRegistrationType(type);
+        if (type === 'solo') {
+            navigation.navigate('SoloRegister');
+        }
+    };
+
+    // Render radio buttons
+    const renderRadioButtons = () => (
+        <View style={styles.radioContainer}>
+        
+            <TouchableOpacity
+                style={styles.radio1}
+                onPress={() => handleRegistrationTypeChange('team')}
+            >
+                <Text style={styles.buttonText}>Team Registration</Text>
+                
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.radio}
+                onPress={() => handleRegistrationTypeChange('solo')}
+            >
+                <Text >Solo Registration</Text>
+                
+            </TouchableOpacity>
+        </View>
+    );
 
     // Inside your Importantdates component
     useFocusEffect(
@@ -409,9 +438,10 @@ export default function Register() {
 
     return (
         <ScrollView style={styles.container}>
-        {isLoading && <LoadingOverlay />}
-        <Text style={styles.title}>Hack Revolution Registration</Text>
         
+        {isLoading && <LoadingOverlay />}
+        <Text style={styles.title}>Hack Revolution Team Registration</Text>
+        {renderRadioButtons()}
 
         {renderStep()}
 
@@ -435,6 +465,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f4f4f8', // Lighter background
         padding: 20,
+    },
+    radioContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        margin: 20,
     },
     title: {
         fontSize: 24,
@@ -538,5 +573,43 @@ const styles = StyleSheet.create({
         marginTop: 10,
         color: '#000', // Black text
         fontSize: 18, // Slightly larger font size
+    },
+    radioContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    radio: {
+        backgroundColor: '#f0f0f0', // Light grey background
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        marginHorizontal: 8,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#c0c0c0', // Subtle border color
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    radio1: {
+        backgroundColor: '#213966',
+        color:"white", // Light grey background
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        marginHorizontal: 8,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#c0c0c0', // Subtle border color
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    radioDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor:"#213966",// Match your primary color or choose a distinct color
+        marginLeft: 10,
     },
 });
